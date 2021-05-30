@@ -1,5 +1,6 @@
 // @TODO: YOUR CODE HERE!
 
+// Set up SVG definitions
 let svgWidth = 960;
 let svgHeight = 620;
 
@@ -34,21 +35,21 @@ let chosenXAxis = 'poverty';
 let chosenYAxis = 'healthcare';
 
 //a function for updating the x-scale variable upon click of label
-function xScale(data, chosenXAxis) {
+function xScale(censusData, chosenXAxis) {
     //scales
     let xLinearScale = d3.scaleLinear()
-      .domain([d3.min(data, d => d[chosenXAxis]) * 0.8,
-        d3.max(data, d => d[chosenXAxis]) * 1.2])
+      .domain([d3.min(censusData, d => d[chosenXAxis]) * 0.8,
+        d3.max(censusData, d => d[chosenXAxis]) * 1.2])
       .range([0, width]);
 
     return xLinearScale;
 }
 //a function for updating y-scale variable upon click of label
-function yScale(data, chosenYAxis) {
+function yScale(censusData, chosenYAxis) {
   //scales
   let yLinearScale = d3.scaleLinear()
-    .domain([d3.min(data, d => d[chosenYAxis]) * 0.8,
-      d3.max(data, d => d[chosenYAxis]) * 1.2])
+    .domain([d3.min(censusData, d => d[chosenYAxis]) * 0.8,
+      d3.max(censusData, d => d[chosenYAxis]) * 1.2])
     .range([height, 0]);
 
   return yLinearScale;
@@ -146,7 +147,7 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
     .attr('class', 'd3-tip')
     .offset([-8, 0])
     .html(function(d) {
-        return (`${d.state}<br>${xLabel} ${styleX(d[chosenXAxis], chosenXAxis)}<br>${yLabel} ${d[chosenYAxis]}%`);
+      return (`${d.state}<br>${xLabel} ${styleX(d[chosenXAxis], chosenXAxis)}<br>${yLabel} ${d[chosenYAxis]}%`);
   });
 
   circlesGroup.call(toolTip);
@@ -158,12 +159,12 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
     return circlesGroup;
 }
 //retrieve data
-d3.csv('./assets/data/data.csv').then(function(data) {
+d3.csv('./assets/data/data.csv').then(function(censusData) {
 
-    console.log(data);
+    console.log(censusData);
     
     //Parse data
-    data.forEach(function(data){
+    censusData.forEach(function(data){
         data.obesity = +data.obesity;
         data.income = +data.income;
         data.smokes = +data.smokes;
@@ -173,8 +174,8 @@ d3.csv('./assets/data/data.csv').then(function(data) {
     });
 
     //create linear scales
-    var xLinearScale = xScale(data, chosenXAxis);
-    var yLinearScale = yScale(data, chosenYAxis);
+    var xLinearScale = xScale(censusData, chosenXAxis);
+    var yLinearScale = yScale(censusData, chosenYAxis);
 
     //create x axis
     var bottomAxis = d3.axisBottom(xLinearScale);
@@ -194,7 +195,7 @@ d3.csv('./assets/data/data.csv').then(function(data) {
     
     //append Circles
     var circlesGroup = chartGroup.selectAll('circle')
-      .data(data)
+      .data(censusData)
       .enter()
       .append('circle')
       .classed('stateCircle', true)
@@ -205,7 +206,7 @@ d3.csv('./assets/data/data.csv').then(function(data) {
 
     //append Initial Text
     var textGroup = chartGroup.selectAll('.stateText')
-      .data(data)
+      .data(censusData)
       .enter()
       .append('text')
       .classed('stateText', true)
@@ -291,7 +292,7 @@ d3.csv('./assets/data/data.csv').then(function(data) {
           chosenXAxis = value; 
 
           //update x for new data
-          xLinearScale = xScale(data, chosenXAxis);
+          xLinearScale = xScale(censusData, chosenXAxis);
 
           //update x 
           xAxis = renderXAxis(xLinearScale, xAxis);
@@ -333,7 +334,7 @@ d3.csv('./assets/data/data.csv').then(function(data) {
             chosenYAxis = value;
 
             //update Y scale
-            yLinearScale = yScale(data, chosenYAxis);
+            yLinearScale = yScale(censusData, chosenYAxis);
 
             //update Y axis 
             yAxis = renderYAxis(yLinearScale, yAxis);
